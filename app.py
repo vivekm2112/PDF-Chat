@@ -2,6 +2,8 @@ import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
 
 def get_pdf_text(pdf_docs):
    text=""
@@ -16,7 +18,10 @@ def get_text_chunks(raw_text):
     chunks = text_splitter.split_text(raw_text)
     return chunks
 
-
+def get_vectorstore(text_chunks):
+    embedding = OpenAIEmbeddings()
+    vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
+    return vectorstore
 
 def main():
     load_dotenv()
@@ -37,6 +42,7 @@ def main():
                 text_chunks=get_text_chunks(raw_text)
                 st.write(text_chunks)
                 #create vector store
+                vectorstore=get_vectorstore(text_chunks)
                 
 
         #chatgpt
